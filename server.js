@@ -13,6 +13,24 @@ const fs       = require("fs");
 require("dotenv").config();
 
 const db = require("./database");
+
+const app = express();
+
+// ✅ CORS FIX
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+// ✅ JSON
+app.use(express.json());
+
+// Optional extra safety
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 const app = express();
 
 app.use(cors({
