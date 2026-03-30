@@ -1,16 +1,7 @@
 // server.js — Electronics Community Backend
-const express = require("express");
-const cors = require("cors");
 
-const app = express();
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}));
 
-app.use(express.json());
 
 const express  = require("express");
 const bcrypt   = require("bcryptjs");
@@ -24,19 +15,13 @@ require("dotenv").config();
 const db = require("./database");
 const app = express();
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  next();
-});
-
-// ── MIDDLEWARE ──
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-app.use(express.json());
+
+app.use(express.json()); 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ── UPLOADS FOLDER ──
