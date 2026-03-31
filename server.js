@@ -3,20 +3,13 @@ const cors = require("cors");
 
 const app = express();
 
-// ✅ CORS
-app.use(cors({
-  origin: "*",
-  methods: "*",
-  allowedHeaders: "*"
-}));
-
-// ✅ JSON
+app.use(cors());
 app.use(express.json());
 
-// ✅ SIMPLE MEMORY DB
+// Temporary database
 let users = [];
 
-// ✅ REGISTER
+// REGISTER
 app.post("/api/register", (req, res) => {
   const { email, password } = req.body;
 
@@ -34,7 +27,7 @@ app.post("/api/register", (req, res) => {
   res.json({ message: "Registered successfully" });
 });
 
-// ✅ LOGIN
+// LOGIN
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
@@ -48,15 +41,14 @@ app.post("/api/login", (req, res) => {
     return res.status(400).json({ message: "Wrong password" });
   }
 
-  res.json({ token: "dummy-token" });
+  res.json({ message: "Login successful" });
 });
 
-// ✅ TEST
+// TEST
 app.get("/", (req, res) => {
   res.send("Backend running");
 });
 
-// ✅ START
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
