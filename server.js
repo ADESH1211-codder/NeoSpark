@@ -1,56 +1,56 @@
 const express = require("express");
 const cors = require("cors");
+const sqlite3 = require("sqlite3").verbose();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Temporary database
-let users = [];
+// DATABASE
+const db = new sqlite3.Database("./database.db");
+
+// CREATE TABLE
+db.run(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE,
+    password TEXT
+  )
+`);
 
 // REGISTER
 app.post("/api/register", (req, res) => {
-  const { email, password } = req.body;
+  const data = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Missing fields" });
-  }
+  const query = `INSERT INTO users (email, password) VALUES (?, ?)`;
 
-  const exists = users.find(u => u.email === email);
-  if (exists) {
-    return res.status(400).json({ message: "User already exists" });
-  }
+  db.run(query, [data.email, data.password], function (err) {
+    if (err) {
+      return res.status(400).json({ message: "User exists" });
+    }
 
-  users.push({ email, password });
-
-  res.json({ message: "Registered successfully" });
+    res.json({ message: "Registered successfully" });
+  });
 });
 
 // LOGIN
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
-  const user = users.find(u => u.email === email);
+  const query = `SELECT * FROM users WHERE email=? AND password=?`;
 
-  if (!user) {
-    return res.status(400).json({ message: "User not found" });
-  }
-
-  if (user.password !== password) {
-    return res.status(400).json({ message: "Wrong password" });
-  }
-
-  res.json({ message: "Login successful" });
+  db.get(query, [email, password], (err, row) => {
+    if (!row) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+    res.json({ message: "Login successful" });
+  });
 });
 
-// TEST
-app.get("/", (req, res) => {
-  res.send("Backend running");
-});
-
-const PORT = process.env.PORT || 5000;
+// START
+const PORT = 5000;
 
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log("Server running on port 5000");
 });
